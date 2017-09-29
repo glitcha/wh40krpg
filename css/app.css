@@ -1,0 +1,10 @@
+.character {
+	border:1px solid #ddd;
+}
+	.character .hit-locations {
+		
+	}
+		.character .hit-locations input {
+			width:30px;
+			text-align: center;
+		}

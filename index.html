@@ -11,41 +11,64 @@
 	
 	<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="css/app.css">
 	
 </head>
 <body>
 	
 	<div class="container">
-		<div class="row">
-			<div id="pcs" class="col-md-6">
 
-			</div>
-			<div id="nps" class="col-md-6">
+			<div id="characters">
 				<div class="list"></div>
 				<div class="controls">
 					<select name="nps-preset" class="form-control"></select>
+					<button id="btn-roll-initiative" class="btn btn-primary" type="button">Roll Initiative</button>
 				</div>
 			</div>
-		</div>
+
 	</div>
 
 	<script id="tmpl-character" type="text/x-handlebars-template">
 		
-		<div class="controls">
-			
-			<form name="form-attributes">
-				<input name="attribute-toughness" placeholder="Toughness" value="{{at_to}}"/>
-				<input name="attribute-agility" placeholder="Agility" value="{{at_ag}}"/>
-			</form>
-			
-			<form name="form-armour">
-				<input name="armour-head" placeholder="Head" value="{{ar_hd}}"/>
-				<input name="armour-right-arm" placeholder="Right Arm" value="{{ar_ra}}"/>
-				<input name="armour-left-arm" placeholder="Left Arm" value="{{ar_la}}"/>
-				<input name="armour-body" placeholder="Body" value="{{ar_bd}}"/>
-				<input name="armour-right-leg" placeholder="Right Leg" value="{{ar_rl}}"/>
-				<input name="armour-left-leg" placeholder="Left Leg" value="{{ar_ll}}"/>
-			</form>
+		<div class="character">
+			<div class="character-header">
+				<input type="hidden" name="guid" value="{{guid}}"/>
+				<input type="text" class="title" value="{{title}}"/>
+				{{guid}}
+			</div>
+			<div class="character-body">
+				<div class="controls">
+					
+					<div class="form-attributes">
+						<input name="attribute-toughness" placeholder="Toughness" value="{{at_to}}"/>
+						<input name="attribute-agility" placeholder="Agility" value="{{at_ag}}"/>
+					</div>
+					
+					<div class="form-armour">
+						<table class="hit-locations">
+							<tr>
+								<td></td>
+								<td><input name="armour-head" placeholder="Head" value="{{ar_hd}}"/></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><input name="armour-left-arm" placeholder="Left Arm" value="{{ar_la}}"/></td>
+								<td><input name="armour-body" placeholder="Body" value="{{ar_bd}}"/></td>
+								<td><input name="armour-right-arm" placeholder="Right Arm" value="{{ar_ra}}"/></td>
+							</tr>
+							<tr>
+								<td><input name="armour-right-leg" placeholder="Right Leg" value="{{ar_rl}}"/></td>
+								<td></td>
+								<td><input name="armour-left-leg" placeholder="Left Leg" value="{{ar_ll}}"/></td>
+							</tr>
+						</table>
+					</div>
+					
+					<div class="damage">
+						
+					</div>
+				</div>
+			</div>
 		</div>
 	</script>
 
