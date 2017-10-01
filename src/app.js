@@ -32,6 +32,22 @@ var app = {
     init : function() {
         app.setupAddPreset($('#characters select[name="nps-preset"]'));
         app.setupRollInitiative();
+        app.setupClearCharacters();
+        app.load();
+    },
+    
+    setupAutoSave : function() {
+        $('input[type="text"]').on('change keydown paste input', function() {
+            app.save();
+        });
+    },
+    
+    setupClearCharacters : function() {
+        $('#btn-clear-characters').on('click', function(event) {
+            event.preventDefault();
+            app.clearCharacters(); 
+            app.save();
+        });
     },
     
     setupRollInitiative : function() {
@@ -58,6 +74,12 @@ var app = {
         var preset = app.presetData[selected];
         preset.guid = app.guid();
         $('#characters .list').append(app.template('tmpl-character', preset));
+        app.save();
+        app.setupAutoSave();
+    },
+    
+    clearCharacters : function() {
+        $('#characters .list').html('');
     },
 
     template : function(elementId, variables) {
@@ -117,6 +139,44 @@ var app = {
                 .substring(1);
         }
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+    },
+    
+    save : function() {
+        
+        var data = {
+            characters : []
+        };
+
+        var characters = $('#characters .character');
+        
+        for(var i = 0; i < characters.length; i++) {
+            data.characters.push({
+                title : $(characters[i]).find('input[name="title"]').val(),
+                key : $(characters[i]).find('input[name="guid"]').val(),
+                at_to : $(characters[i]).find('input[name="attribute-toughness"]').val(),
+                at_ag : $(characters[i]).find('input[name="attribute-agility"]').val(),
+                at_hp : $(characters[i]).find('input[name="attribute-hitpoints"]').val(),
+                ar_hd : $(characters[i]).find('input[name="armour-head"]').val(),
+                ar_ra : $(characters[i]).find('input[name="armour-right-arm"]').val(),
+                ar_la : $(characters[i]).find('input[name="armour-left-arm"]').val(),
+                ar_bd : $(characters[i]).find('input[name="armour-body"]').val(),
+                ar_rl : $(characters[i]).find('input[name="armour-right-leg"]').val(),
+                ar_ll : $(characters[i]).find('input[name="armour-left-leg"]').val()
+            });
+        }
+            
+        localStorage.setItem('data', JSON.stringify(data));
+    },
+    
+    load : function() {
+        
+        var data = JSON.parse(localStorage.getItem('data'));
+        if(data != null) {
+            for(var i = 0; i < data.characters.length; i++) {
+                $('#characters .list').append(app.template('tmpl-character', data.characters[i]));
+            }      
+        }
+        app.setupAutoSave();
     }
 }
 

@@ -12,6 +12,7 @@
 	<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
 	<link rel="stylesheet" href="css/app.css">
+	<link rel="stylesheet" href="css/superhero.min.css">
 	
 </head>
 <body>
@@ -23,6 +24,7 @@
 				<div class="controls">
 					<select name="nps-preset" class="form-control"></select>
 					<button id="btn-roll-initiative" class="btn btn-primary" type="button">Roll Initiative</button>
+					<button id="btn-clear-characters" class="btn btn-warning" type="button">Clear Characters</button>
 				</div>
 			</div>
 
@@ -33,7 +35,7 @@
 		<div class="character">
 			<div class="character-header">
 				<input type="hidden" name="guid" value="{{guid}}"/>
-				<input type="text" class="title" value="{{title}}"/>
+				<input type="text" name="title" value="{{title}}"/>
 				{{guid}}
 			</div>
 			<div class="character-body">
@@ -42,6 +44,7 @@
 					<div class="form-attributes">
 						<input name="attribute-toughness" placeholder="Toughness" value="{{at_to}}"/>
 						<input name="attribute-agility" placeholder="Agility" value="{{at_ag}}"/>
+						<input name="attribute-hitpoints" placeholder="Hit Points" value="{{at_hp}}"/>
 					</div>
 					
 					<div class="form-armour">
