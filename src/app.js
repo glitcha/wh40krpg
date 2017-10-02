@@ -29,6 +29,8 @@ var app = {
         },
     },
     
+    currentGUID : null,
+    
     init : function() {
         app.setupAddPreset($('#characters select[name="nps-preset"]'));
         app.setupRollInitiative();
@@ -73,13 +75,13 @@ var app = {
         var selected = $(event.target).val();
         var preset = app.presetData[selected];
         preset.guid = app.guid();
-        $('#characters .list').append(app.template('tmpl-character', preset));
+        $('#characters>.list').append(app.template('tmpl-character', preset));
         app.save();
         app.setupAutoSave();
     },
     
     clearCharacters : function() {
-        $('#characters .list').html('');
+        $('#characters>.list').html('');
     },
 
     template : function(elementId, variables) {
@@ -120,8 +122,6 @@ var app = {
                 );
             }
         }
-        
-        console.log(rolls);
     },
     
     getCharacterFromGUID : function(guid) {
@@ -150,9 +150,10 @@ var app = {
         var characters = $('#characters .character');
         
         for(var i = 0; i < characters.length; i++) {
+            
             data.characters.push({
                 title : $(characters[i]).find('input[name="title"]').val(),
-                key : $(characters[i]).find('input[name="guid"]').val(),
+                guid : $(characters[i]).find('input[name="guid"]').val(),
                 at_to : $(characters[i]).find('input[name="attribute-toughness"]').val(),
                 at_ag : $(characters[i]).find('input[name="attribute-agility"]').val(),
                 at_hp : $(characters[i]).find('input[name="attribute-hitpoints"]').val(),
@@ -161,22 +162,105 @@ var app = {
                 ar_la : $(characters[i]).find('input[name="armour-left-arm"]').val(),
                 ar_bd : $(characters[i]).find('input[name="armour-body"]').val(),
                 ar_rl : $(characters[i]).find('input[name="armour-right-leg"]').val(),
-                ar_ll : $(characters[i]).find('input[name="armour-left-leg"]').val()
+                ar_ll : $(characters[i]).find('input[name="armour-left-leg"]').val(),
+                damage : app.getDamageArray(characters[i])
             });
         }
-            
+        
         localStorage.setItem('data', JSON.stringify(data));
     },
     
     load : function() {
         
         var data = JSON.parse(localStorage.getItem('data'));
+        console.log(data);
         if(data != null) {
             for(var i = 0; i < data.characters.length; i++) {
-                $('#characters .list').append(app.template('tmpl-character', data.characters[i]));
+                
+                $('#characters>.list').append(app.template('tmpl-character', data.characters[i]));
             }      
         }
         app.setupAutoSave();
+    },
+    
+    getDamageArray : function(character) {
+        
+        var damageRows = $(character).find('.damage .list table tr');
+        var damageArr = [];
+        for(var i = 0; i < damageRows.length; i++) {
+            var hitLocation = $(damageRows[i]).find('td.loc').html();
+            var damage = app.parseInt($(damageRows[i]).find('td.dam').html());
+            damageArr.push([hitLocation, damage]);
+        }
+
+        return damageArr;
+    },
+    
+    addDamage_OnClick : function(guid) {
+        
+        app.currentGUID = guid;
+        
+        $('#modal-damage input[name="roll-to-hit"]').val('');
+        $('#modal-damage input[name="pen"]').val('');
+        $('#modal-damage input[name="damage"]').val('');
+        
+        $('#modal-damage').modal('show');
+        
+        $('#modal-damage #btn-apply-damage').on('click', function() {
+            
+            var character = app.getCharacterFromGUID(app.currentGUID);
+            var hitLocationNumber = app.getHitLocationNumber($('#modal-damage input[name="roll-to-hit"]').val());
+            var hitLocation = app.getHitLocation(hitLocationNumber);
+            var pen = app.parseInt($('#modal-damage input[name="pen"]').val());
+            var damage = app.parseInt($('#modal-damage input[name="damage"]').val());
+            var armour = app.parseInt($(character).find('input[name="armour-' + hitLocation + '"]').val());
+            var armourResult = ((armour - pen) < 0) ? 0 : armour - pen;
+            var damageTotal = damage - armourResult;
+            
+            if(damageTotal > 0) {
+                $(character).find('.damage .list table').append('<tr><td class="loc">' + hitLocation + '</td><td class="dam">' + damageTotal + '</td></tr>');
+            }
+            
+            var currentHP = app.parseInt($(character).find('input[name="attribute-hitpoints"]').val());
+            $(character).find('input[name="attribute-hitpoints"]').val(currentHP - damageTotal);
+            
+            app.save();
+            
+            $('#modal-damage').modal('hide');
+        });
+    },
+    
+    parseInt : function(string) {
+        if(string == undefined || string == '') 
+            return 0;
+        else 
+            return parseInt(string);
+    },
+    
+    getHitLocationNumber : function(roll) {
+    
+        if(roll == 100) {
+            return 00;
+        } else {
+            var rolla = roll.toString().split('');
+            var switchRoll = rolla[1] + rolla[0];
+            return parseInt(switchRoll);
+        }
+    },
+    
+    getHitLocation : function(hitLocationNumber) {
+        if(hitLocationNumber < 11)
+            return 'head';
+        if(hitLocationNumber > 10 && hitLocationNumber < 21)
+            return 'right-arm';
+        if(hitLocationNumber > 20 && hitLocationNumber < 31)
+            return 'left-arm';
+        if(hitLocationNumber > 30 && hitLocationNumber < 71)
+            return 'body';
+        if(hitLocationNumber > 70 && hitLocationNumber < 86)
+            return 'right-leg';
+        if(hitLocationNumber > 85 && hitLocationNumber < 101)
+            return 'left-leg';
     }
 }
 

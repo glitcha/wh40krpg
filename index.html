@@ -1,79 +1,121 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<meta charset="utf-8" />
-	<title>WH40JRPG</title>
+    <meta charset="utf-8" />
+    <title>WH40JRPG</title>
 
-	<script src="bower_components/jquery/dist/jquery.min.js"></script>
-	<script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-	<script src="bower_components/handlebars/handlebars.min.js"></script>
-	<script src="src/app.js"></script>
-	
-	<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
-	<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
-	<link rel="stylesheet" href="css/app.css">
-	<link rel="stylesheet" href="css/superhero.min.css">
-	
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/handlebars/handlebars.min.js"></script>
+    <script src="src/app.js"></script>
+    
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    
 </head>
 <body>
-	
-	<div class="container">
+    
+    <div class="container">
+        <div id="characters">
+            <div class="list"></div>
+            <div class="controls">
+                <select name="nps-preset" class="form-control"></select>
+                <button id="btn-roll-initiative" class="btn btn-primary" type="button">Roll Initiative</button>
+                <button id="btn-clear-characters" class="btn btn-danger" type="button">Clear Characters</button>
+            </div>
+        </div>
+    </div>
 
-			<div id="characters">
-				<div class="list"></div>
-				<div class="controls">
-					<select name="nps-preset" class="form-control"></select>
-					<button id="btn-roll-initiative" class="btn btn-primary" type="button">Roll Initiative</button>
-					<button id="btn-clear-characters" class="btn btn-warning" type="button">Clear Characters</button>
-				</div>
-			</div>
+    <div id="modal-damage" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Add Damage</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Roll To Hit</label>
+                        <input name="roll-to-hit" class="form-control" type="number" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>Damage</label>
+                        <input name="damage" class="form-control" type="number" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>Pen</label>
+                        <input name="pen" class="form-control" type="number" value="" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="btn-apply-damage" type="button" class="btn btn-primary">Apply</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
-	</div>
-
-	<script id="tmpl-character" type="text/x-handlebars-template">
-		
-		<div class="character">
-			<div class="character-header">
-				<input type="hidden" name="guid" value="{{guid}}"/>
-				<input type="text" name="title" value="{{title}}"/>
-				{{guid}}
-			</div>
-			<div class="character-body">
-				<div class="controls">
-					
-					<div class="form-attributes">
-						<input name="attribute-toughness" placeholder="Toughness" value="{{at_to}}"/>
-						<input name="attribute-agility" placeholder="Agility" value="{{at_ag}}"/>
-						<input name="attribute-hitpoints" placeholder="Hit Points" value="{{at_hp}}"/>
-					</div>
-					
-					<div class="form-armour">
-						<table class="hit-locations">
-							<tr>
-								<td></td>
-								<td><input name="armour-head" placeholder="Head" value="{{ar_hd}}"/></td>
-								<td></td>
-							</tr>
-							<tr>
-								<td><input name="armour-left-arm" placeholder="Left Arm" value="{{ar_la}}"/></td>
-								<td><input name="armour-body" placeholder="Body" value="{{ar_bd}}"/></td>
-								<td><input name="armour-right-arm" placeholder="Right Arm" value="{{ar_ra}}"/></td>
-							</tr>
-							<tr>
-								<td><input name="armour-right-leg" placeholder="Right Leg" value="{{ar_rl}}"/></td>
-								<td></td>
-								<td><input name="armour-left-leg" placeholder="Left Leg" value="{{ar_ll}}"/></td>
-							</tr>
-						</table>
-					</div>
-					
-					<div class="damage">
-						
-					</div>
-				</div>
-			</div>
-		</div>
-	</script>
-
+    <script id="tmpl-character" type="text/x-handlebars-template">
+        <div class="character">
+            <div class="character-header">
+                <input type="hidden" name="guid" value="{{guid}}"/>
+                <input type="text" name="title" value="{{title}}"/>
+            </div>
+            <div class="character-body">
+                <div class="controls">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-attributes">
+                                <label>T</label>
+                                <input type="number" name="attribute-toughness" placeholder="Toughness" value="{{at_to}}"/>
+                                <label>Ag</label>
+                                <input type="number" name="attribute-agility" placeholder="Agility" value="{{at_ag}}"/>
+                                <label>HP</label>
+                                <input type="number" name="attribute-hitpoints" placeholder="Hit Points" value="{{at_hp}}"/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-armour">
+                                <table class="hit-locations">
+                                    <tr>
+                                        <td></td>
+                                        <td><input type="number" name="armour-head" placeholder="Head" value="{{ar_hd}}"/></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="number" name="armour-left-arm" placeholder="Left Arm" value="{{ar_la}}"/></td>
+                                        <td><input type="number" name="armour-body" placeholder="Body" value="{{ar_bd}}"/></td>
+                                        <td><input type="number" name="armour-right-arm" placeholder="Right Arm" value="{{ar_ra}}"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td><input type="number" name="armour-right-leg" placeholder="Right Leg" value="{{ar_rl}}"/></td>
+                                        <td></td>
+                                        <td><input type="number" name="armour-left-leg" placeholder="Left Leg" value="{{ar_ll}}"/></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="damage">
+                        <div class="list">
+                            <table>
+                            {{#each damage}}
+                            <tr>
+                                <td>{{this.[0]}}</td>
+                                <td>{{this.[1]}}</td>
+                            </tr>
+                            {{/each}}
+                            </table>
+                        </div>
+                        <div class="controls">
+                            <button class="btn btn-danger" onclick="return app.addDamage_OnClick('{{guid}}');">Add Damage</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
 </body>
 </html>

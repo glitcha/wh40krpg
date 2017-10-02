@@ -1,10 +1,22 @@
 .character {
-	border:1px solid #ddd;
+	border:1px solid #464545;
+	margin-bottom:5px;
+	border-radius: 4px;
 }
-	.character .hit-locations {
-		
+	.character input[type="number"] {
+		width:34px;
+		text-align: center;
 	}
-		.character .hit-locations input {
-			width:30px;
-			text-align: center;
-		}
+	.character .character-header {
+		background-color:#303030;
+		padding:10px;
+	}
+	.character .character-body {
+		padding:10px;
+	}
+	.character input[name="title"] {
+		background-color: transparent;
+		color:#ffffff;
+		font-size:20px;
+	}
+	
