@@ -4,7 +4,7 @@
 	border-radius: 4px;
 }
 	.character input[type="number"] {
-		width:34px;
+		width:40px;
 		text-align: center;
 	}
 	.character .character-header {
@@ -19,4 +19,18 @@
 		color:#ffffff;
 		font-size:20px;
 	}
+select[name="nps-preset"] {
+	display: inline-block;
+	width: 150px;
+}
+#characters .controls .btn {
 	
+}
+.form-armour {
+	margin-bottom:5px;
+}
+
+.damage .list table td {
+	padding-right:5px;
+	text-transform: capitalize;
+}

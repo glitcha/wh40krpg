@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
+    <meta id="meta" name="viewport" content="width=device-width,initial-scale=1.0" />
     <title>WH40JRPG</title>
 
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -24,6 +25,8 @@
                 <select name="nps-preset" class="form-control"></select>
                 <button id="btn-roll-initiative" class="btn btn-primary" type="button">Roll Initiative</button>
                 <button id="btn-clear-characters" class="btn btn-danger" type="button">Clear Characters</button>
+                <button id="btn-export" class="btn btn-success" type="button" onclick="return app.exportShow_OnClick(event);">Export</button>
+                <button id="btn-import" class="btn btn-success" type="button" onclick="return app.importShow_OnClick(event);">Import</button>
             </div>
         </div>
     </div>
@@ -51,7 +54,48 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button id="btn-apply-damage" type="button" class="btn btn-primary">Apply</button>
+                    <button id="btn-apply-damage" type="button" class="btn btn-primary" onclick="return app.applyDamage_OnClick(event);">Apply</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    
+    <div id="modal-export" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Export</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Data</label>
+                        <textarea class="form-control" rows="10" name="data"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div id="modal-import" class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Import</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Data</label>
+                        <textarea id="txt-data" class="form-control" rows="10" name="data"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default">Import</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -66,17 +110,18 @@
             <div class="character-body">
                 <div class="controls">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-6 col-xs-6">
                             <div class="form-attributes">
                                 <label>T</label>
                                 <input type="number" name="attribute-toughness" placeholder="Toughness" value="{{at_to}}"/>
                                 <label>Ag</label>
                                 <input type="number" name="attribute-agility" placeholder="Agility" value="{{at_ag}}"/>
+                                <br/>
                                 <label>HP</label>
                                 <input type="number" name="attribute-hitpoints" placeholder="Hit Points" value="{{at_hp}}"/>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6 col-xs-6">
                             <div class="form-armour">
                                 <table class="hit-locations">
                                     <tr>
@@ -98,19 +143,25 @@
                             </div>
                         </div>
                     </div>
-                    <div class="damage">
-                        <div class="list">
-                            <table>
-                            {{#each damage}}
-                            <tr>
-                                <td>{{this.[0]}}</td>
-                                <td>{{this.[1]}}</td>
-                            </tr>
-                            {{/each}}
-                            </table>
-                        </div>
-                        <div class="controls">
-                            <button class="btn btn-danger" onclick="return app.addDamage_OnClick('{{guid}}');">Add Damage</button>
+                    <div class="row">
+                        <div class="col-md-12 col-xs-12">
+                            <div class="damage">
+                                <div class="list">
+                                    <table>
+                                    {{#each damage}}
+                                    <tr>
+                                        <td class="loc">{{this.[0]}}</td>
+                                        <td class="dam">{{this.[1]}}</td>
+                                    </tr>
+                                    {{/each}}
+                                    </table>
+                                </div>
+                                <div class="controls">
+                                    <button class="btn btn-success btn-sm" onclick="return app.addDamage_OnClick('{{guid}}');">Add Damage</button>
+                                    <button class="btn btn-warning btn-sm" onclick="return app.clearDamageLog_OnClick(event, '{{guid}}');">Clear Log</button>
+                                    <button class="btn btn-danger btn-sm" onclick="return app.removeCharacter_OnClick(event, '{{guid}}');">Remove Character</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

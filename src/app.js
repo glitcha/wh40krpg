@@ -60,7 +60,7 @@ var app = {
         $(element).html('');
         $(element).append($('<option>', {
             value: '',
-            text: ''
+            text: 'Add Character'
         }));
         jQuery.each(app.presetData, function(index, preset) {
             $(element).append($('<option>', {
@@ -68,7 +68,27 @@ var app = {
                 text: preset.title
             }));
         });
-        $(element).on('click', app.addPreset_OnClick);
+        $(element).on('change', app.addPreset_OnClick);
+    },
+    
+    exportShow_OnClick : function(event) {
+        event.preventDefault();
+        $('#modal-export').modal('show');
+        var data = localStorage.getItem('data');
+        $('#modal-export textarea[name="data"]').val(data);
+    },
+    
+    importShow_OnClick : function(event) {
+        event.preventDefault();
+        $('#modal-import').modal('show');
+    },
+    
+    import_OnClick : function(event) {
+        event.preventDefault();
+        localStorage.setItem('data', 
+            $('#modal-import #txt-data').val()    
+        );
+        app.load();
     },
     
     addPreset_OnClick : function(event) {
@@ -78,10 +98,29 @@ var app = {
         $('#characters>.list').append(app.template('tmpl-character', preset));
         app.save();
         app.setupAutoSave();
+        $('select[name="nps-preset"]').val('');
+    },
+    
+    clearDamageLog_OnClick : function(event, guid) {
+        var character = app.getCharacterFromGUID(guid);
+        $(character).find('.damage .list table').html('');
+        app.save();
+    },
+    
+    removeCharacter_OnClick : function(event, guid) {        
+        event.preventDefault();
+        
+        if (window.confirm("Are you sure?")) {
+            var character = app.getCharacterFromGUID(guid);
+            character.remove();
+            app.save();
+        }
     },
     
     clearCharacters : function() {
-        $('#characters>.list').html('');
+        if (window.confirm("Are you sure?")) {
+            $('#characters>.list').html('');
+        }
     },
 
     template : function(elementId, variables) {
@@ -110,8 +149,6 @@ var app = {
         }
         
         rolls.sort(function(a, b) {
-            // if(b.roll = a.roll) 
-            //     return 
             return parseFloat(b.roll) - parseFloat(a.roll);
         });
         
@@ -125,7 +162,16 @@ var app = {
     },
     
     getCharacterFromGUID : function(guid) {
-        return $('input[value="' + guid + '"').parents('.character');  
+        
+        var characters = $('.character');
+        
+        for(var i = 0; i < characters.length; i++) {
+            if($(characters[i]).find('input[name="guid"]').val() == guid) {
+                return $(characters[i]);
+            }
+        }
+        
+        return null;  
     },
     
     rollDice : function(sides) {
@@ -171,16 +217,17 @@ var app = {
     },
     
     load : function() {
-        
-        var data = JSON.parse(localStorage.getItem('data'));
-        console.log(data);
-        if(data != null) {
-            for(var i = 0; i < data.characters.length; i++) {
-                
-                $('#characters>.list').append(app.template('tmpl-character', data.characters[i]));
-            }      
+        if(localStorage.getItem('data') != '') {
+            var data = JSON.parse(localStorage.getItem('data'));
+            if(data != null) {
+                for(var i = 0; i < data.characters.length; i++) {
+                    $('#characters>.list').append(app.template('tmpl-character', data.characters[i]));
+                }      
+            }
+            app.setupAutoSave();
+        } else {
+            
         }
-        app.setupAutoSave();
     },
     
     getDamageArray : function(character) {
@@ -205,8 +252,13 @@ var app = {
         $('#modal-damage input[name="damage"]').val('');
         
         $('#modal-damage').modal('show');
+    },
+    
+    applyDamage_OnClick : function(event) {
         
-        $('#modal-damage #btn-apply-damage').on('click', function() {
+        try {
+        
+            event.preventDefault();
             
             var character = app.getCharacterFromGUID(app.currentGUID);
             var hitLocationNumber = app.getHitLocationNumber($('#modal-damage input[name="roll-to-hit"]').val());
@@ -215,19 +267,23 @@ var app = {
             var damage = app.parseInt($('#modal-damage input[name="damage"]').val());
             var armour = app.parseInt($(character).find('input[name="armour-' + hitLocation + '"]').val());
             var armourResult = ((armour - pen) < 0) ? 0 : armour - pen;
-            var damageTotal = damage - armourResult;
+            var toughness = app.parseInt($(character).find('input[name="attribute-toughness"]').val());;
+            var damageTotal = (damage - armourResult) - toughness;
             
             if(damageTotal > 0) {
                 $(character).find('.damage .list table').append('<tr><td class="loc">' + hitLocation + '</td><td class="dam">' + damageTotal + '</td></tr>');
+                var currentHP = app.parseInt($(character).find('input[name="attribute-hitpoints"]').val());
+                $(character).find('input[name="attribute-hitpoints"]').val(currentHP - damageTotal);
+                app.save();
+            } else {
+                alert('No Damage');
             }
             
-            var currentHP = app.parseInt($(character).find('input[name="attribute-hitpoints"]').val());
-            $(character).find('input[name="attribute-hitpoints"]').val(currentHP - damageTotal);
-            
-            app.save();
-            
             $('#modal-damage').modal('hide');
-        });
+            
+        } catch(err) {
+            alert(err.message);
+        }
     },
     
     parseInt : function(string) {
