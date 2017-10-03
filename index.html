@@ -95,7 +95,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-default">Import</button>
+                    <button type="button" class="btn btn-default" onclick="return app.import_OnClick(event);">Import</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
@@ -106,6 +106,10 @@
             <div class="character-header">
                 <input type="hidden" name="guid" value="{{guid}}"/>
                 <input type="text" name="title" value="{{title}}"/>
+                <span class="pull-right">
+                    <label>Player</label>
+                    <input type="checkbox" name="player" value="1" {{#if player}}checked{{/if}} /> 
+                </span>
             </div>
             <div class="character-body">
                 <div class="controls">

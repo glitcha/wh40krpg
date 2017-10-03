@@ -17,16 +17,55 @@ var app = {
         human : {
             id : 'human',
             title : 'Human',
+            at_to : 2,
+            at_ag : 2,
+            at_hp : 10,
+            ar_hd : 0,
+            ar_ra : 0,
+            ar_la : 0,
+            ar_bd : 0,
+            ar_rl : 0,
+            ar_ll : 0
+        },
+        renegade_militia : {
+            id : 'renegade_militia',
+            title : 'Renegade Militia',
             at_to : 3,
             at_ag : 3,
-            at_hp : 12,
-            ar_hd : 2,
-            ar_ra : 2,
-            ar_la : 2,
-            ar_bd : 2,
-            ar_rl : 2,
-            ar_ll : 2
+            at_hp : 10,
+            ar_hd : 4,
+            ar_ra : 4,
+            ar_la : 4,
+            ar_bd : 4,
+            ar_rl : 4,
+            ar_ll : 4 
         },
+        chaos_marine_elite : {
+            id : 'chaos_marine_elite',
+            title : 'Chaos Marine Elite',
+            at_to : 4,
+            at_ag : 4,
+            at_hp : 29,
+            ar_hd : 8,
+            ar_ra : 8,
+            ar_la : 8,
+            ar_bd : 10,
+            ar_rl : 8,
+            ar_ll : 8 
+        },
+        tau_fire_warrior : {
+            id : 'tau_fire_warrior',
+            title : 'Tau Fire Warrior',
+            at_to : 3,
+            at_ag : 2,
+            at_hp : 12,
+            ar_hd : 6,
+            ar_ra : 6,
+            ar_la : 6,
+            ar_bd : 6,
+            ar_rl : 6,
+            ar_ll : 6  
+        }
     },
     
     currentGUID : null,
@@ -42,6 +81,9 @@ var app = {
         $('input[type="text"]').on('change keydown paste input', function() {
             app.save();
         });
+        $('input[type="checkbox"]').on('click', function() {
+            app.save(); 
+        });
     },
     
     setupClearCharacters : function() {
@@ -50,6 +92,21 @@ var app = {
             app.clearCharacters(); 
             app.save();
         });
+    },
+    
+    highlightPlayers : function() {
+        var character = $('#characters .character');
+        for(var i = 0; i < character.length; i++) {
+            if(app.isChecked($(character[i]).find('input[name="player"]'))) {
+                // player
+                if(!$(character[i]).hasClass('btn-success'))
+                    $(character[i]).addClass('btn-success');
+            } else {
+                // npc
+                if($(character[i]).hasClass('btn-success'))
+                    $(character[i]).removeClass('btn-success');
+            }
+        }
     },
     
     setupRollInitiative : function() {
@@ -84,10 +141,12 @@ var app = {
     },
     
     import_OnClick : function(event) {
+        console.log('here');
         event.preventDefault();
         localStorage.setItem('data', 
             $('#modal-import #txt-data').val()    
         );
+        $('#modal-import').modal('hide');
         app.load();
     },
     
@@ -109,7 +168,6 @@ var app = {
     
     removeCharacter_OnClick : function(event, guid) {        
         event.preventDefault();
-        
         if (window.confirm("Are you sure?")) {
             var character = app.getCharacterFromGUID(guid);
             character.remove();
@@ -187,7 +245,16 @@ var app = {
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
     },
     
+    isChecked : function(element) {
+        if ($(element).is(":checked"))
+            return 1;
+        else
+            return 0;
+    },
+    
     save : function() {
+        
+        app.highlightPlayers();
         
         var data = {
             characters : []
@@ -209,6 +276,7 @@ var app = {
                 ar_bd : $(characters[i]).find('input[name="armour-body"]').val(),
                 ar_rl : $(characters[i]).find('input[name="armour-right-leg"]').val(),
                 ar_ll : $(characters[i]).find('input[name="armour-left-leg"]').val(),
+                player : app.isChecked($(characters[i]).find('input[name="player"]')),
                 damage : app.getDamageArray(characters[i])
             });
         }
@@ -225,9 +293,8 @@ var app = {
                 }      
             }
             app.setupAutoSave();
-        } else {
-            
-        }
+            app.highlightPlayers();
+        } 
     },
     
     getDamageArray : function(character) {
