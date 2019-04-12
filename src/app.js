@@ -65,6 +65,84 @@ var app = {
             ar_bd : 6,
             ar_rl : 6,
             ar_ll : 6  
+        },
+        eldar_dark_reaper : {
+            id : 'eldar_dark_reaper',
+            title : 'Eldar Dark Reaper',
+            at_to : 3,
+            at_ag : 5,
+            at_hp : 18,
+            ar_hd : 7,
+            ar_ra : 7,
+            ar_la : 7,
+            ar_bd : 7,
+            ar_rl : 7,
+            ar_ll : 7  
+        },
+        eldar_howling_banshee : {
+            id : 'eldar_howling_banshee',
+            title : 'Eldar Howling Banshee',
+            at_to : 3,
+            at_ag : 5,
+            at_hp : 15,
+            ar_hd : 5,
+            ar_ra : 5,
+            ar_la : 5,
+            ar_bd : 5,
+            ar_rl : 5,
+            ar_ll : 5  
+        },
+        eldar_guardian : {
+            id : 'eldar_guardian',
+            title : 'Eldar Guardian',
+            at_to : 3,
+            at_ag : 4,
+            at_hp : 12,
+            ar_hd : 3,
+            ar_ra : 4,
+            ar_la : 4,
+            ar_bd : 4,
+            ar_rl : 4,
+            ar_ll : 4  
+        },
+        dark_eldar_kabalite_warrior : {
+            id : 'dark_eldar_kabalite_warrior',
+            title : 'Dark Eldar Kabalite Warrior',
+            at_to : 3,
+            at_ag : 10,
+            at_hp : 10,
+            ar_hd : 4,
+            ar_ra : 4,
+            ar_la : 4,
+            ar_bd : 4,
+            ar_rl : 4,
+            ar_ll : 4    
+        },
+        ork_nob : {
+            id : 'ork_nob',
+            title : 'Ork Nob',
+            at_to : 4,
+            at_ag : 3,
+            at_hp : 21,
+            ar_hd : 2,
+            ar_ra : 2,
+            ar_la : 2,
+            ar_bd : 2,
+            ar_rl : 2,
+            ar_ll : 2    
+        },
+        genestealer : {
+            id : 'genestealer',
+            title : 'Genestealer',
+            at_to : 8,
+            at_ag : 8,
+            at_hp : 20,
+            ar_hd : 4,
+            ar_ra : 4,
+            ar_la : 4,
+            ar_bd : 4,
+            ar_rl : 4,
+            ar_ll : 4    
         }
     },
     
@@ -327,8 +405,11 @@ var app = {
         
             event.preventDefault();
             
+            var rollToHit = $('#modal-damage input[name="roll-to-hit"]').val();
+            if(rollToHit.length < 2)
+                rollToHit = '0' + rollToHit;
             var character = app.getCharacterFromGUID(app.currentGUID);
-            var hitLocationNumber = app.getHitLocationNumber($('#modal-damage input[name="roll-to-hit"]').val());
+            var hitLocationNumber = app.getHitLocationNumber(rollToHit);
             var hitLocation = app.getHitLocation(hitLocationNumber);
             var pen = app.parseInt($('#modal-damage input[name="pen"]').val());
             var damage = app.parseInt($('#modal-damage input[name="damage"]').val());
